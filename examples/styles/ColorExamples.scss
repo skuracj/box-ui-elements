@@ -1,0 +1,21 @@
+.palette {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin: 20px 10px;
+}
+
+.swatch {
+    width: 200px;
+    height: 40px;
+    margin-bottom: 4px;
+    border-radius: 3px;
+}
+
+.swatch-container {
+    margin: 10px;
+}
+
+.swatch-container label {
+    margin: 3px 0 5px;
+}
