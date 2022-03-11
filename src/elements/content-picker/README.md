@@ -9,6 +9,9 @@ var ContentPicker = require('./ContentPicker').default;
         token={TOKEN}
         {...PROPS}
         isSelectionDisabled={true}
+        metadataScope='enterprise'
+    metadataStatusPropName='ocl'
+    metadataTemplateName='oclStatus'
         filters={[
             {
                 'pattern': 'icons',

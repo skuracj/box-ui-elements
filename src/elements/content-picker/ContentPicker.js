@@ -118,6 +118,9 @@ type Props = {
     type: string,
     uploadHost: string,
     isSelectionDisabled: boolean;
+    metadataScope: string;
+    metadataTemplateName: string;
+    metadataStatusPropName: string;
 };
 
 type State = {
@@ -211,6 +214,9 @@ class ContentPicker extends Component<Props, State> {
             token,
             uploadHost,
             filters,
+            metadataTemplateName,
+            metadataStatusPropName,
+            metadataScope
         } = props;
 
         this.api = new API({
@@ -486,7 +492,13 @@ class ContentPicker extends Component<Props, State> {
      * @return {void}
      */
     fetchFolderSuccessCallback(collection: Collection, triggerNavigationEvent: boolean): void {
-        const {clearSelectedItemsOnNavigation, rootFolderId}: Props = this.props;
+        const {
+            clearSelectedItemsOnNavigation,
+            rootFolderId,
+            metadataScope,
+            metadataTemplateName,
+            metadataStatusPropName
+        }: Props = this.props;
         const {id, name}: Collection = collection;
 
         const commonState = {
@@ -494,17 +506,26 @@ class ContentPicker extends Component<Props, State> {
             rootName: id === rootFolderId ? name : '',
         };
 
-        let filters = this.state?.filters;
-        if (filters?.length) {
-            console.log(this.state?.filters);
-            commonState.currentCollection.items.forEach(item => {
-                if (this.isItemNameMatching(item.name, item.type, filters)) {
+        console.log('BOX_FILTERS', this.state?.filters);
+        console.log('BOX_ITEMS', commonState.currentCollection.items);
+
+        commonState.currentCollection.items.forEach(item => {
+            let filters = this.state?.filters;
+
+            if (filters?.length) {
+                if (this.isItemNameMatchingFilters(item.name, item.type, filters)) {
                     this.select(item)
                 } else {
                     item.disabled = true;
                 }
-            })
-        }
+            }
+
+            this.setItemStatusIfMetadataPresent(item, {
+                scope: metadataScope,
+                templateName: metadataTemplateName,
+                propName: metadataStatusPropName
+            });
+        })
 
         // New folder state
         const newState = clearSelectedItemsOnNavigation ? {...commonState, selected: {}} : commonState;
@@ -525,6 +546,13 @@ class ContentPicker extends Component<Props, State> {
         }
     }
 
+    setItemStatusIfMetadataPresent(item, metadata) {
+        const {scope, templateName, propName} = metadata;
+        if (item.metadata && item.metadata[scope]) {
+            item.status = item.metadata[scope][templateName][propName];
+        }
+    }
+
     /**
      * Checks if itemName matches filters
      *
@@ -535,7 +563,7 @@ class ContentPicker extends Component<Props, State> {
      * @return {boolean}
      */
 
-    isItemNameMatching(itemName: string, itemType: string, filters: Array<BoxItemFilter>) : boolean {
+    isItemNameMatchingFilters(itemName: string, itemType: string, filters: Array<BoxItemFilter>): boolean {
         let resultAction, include = false;
 
         filters.forEach(({action, applyTo, type, pattern}) => {
@@ -563,7 +591,7 @@ class ContentPicker extends Component<Props, State> {
      * @return {void}
      */
     fetchFolder = (id?: string, triggerNavigationEvent?: boolean = true): void => {
-        const {rootFolderId}: Props = this.props;
+        const {rootFolderId, metadataScope, metadataTemplateName}: Props = this.props;
         const {
             currentCollection: {id: currentId},
             currentOffset,
@@ -576,7 +604,6 @@ class ContentPicker extends Component<Props, State> {
         const hasFolderChanged = currentId && currentId !== folderId;
         const hasSearchQuery = !!searchQuery.trim().length;
         const offset = hasFolderChanged || hasSearchQuery ? 0 : currentOffset; // Reset offset on folder or mode change
-        const filters = 'mockfilters'
         // If we are navigating around, aka not first load
         // then reset the focus to the root so that after
         // the collection loads the activeElement is not the
@@ -592,6 +619,13 @@ class ContentPicker extends Component<Props, State> {
             currentCollection: this.currentUnloadedCollection(),
             currentOffset: offset,
         });
+
+        const fields = [FOLDER_FIELDS_TO_FETCH];
+
+        if (metadataScope && metadataTemplateName) {
+            fields.push(`metadata.${metadataScope}.${metadataTemplateName}`)
+        }
+
         // Fetch the folder using folder API
         this.api.getFolderAPI().getFolder(
             folderId,
@@ -600,11 +634,10 @@ class ContentPicker extends Component<Props, State> {
             sortBy,
             sortDirection,
             (collection: Collection) => {
-                // console.log('collection', collection);
                 this.fetchFolderSuccessCallback(collection, triggerNavigationEvent);
             },
             this.errorCallback,
-            {fields: ['metadata.enterprise.oclStatus', ...FOLDER_FIELDS_TO_FETCH], forceFetch: true},
+            {fields, forceFetch: true},
         );
     };
 

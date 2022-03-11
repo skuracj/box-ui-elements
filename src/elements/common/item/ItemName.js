@@ -25,7 +25,6 @@ const ItemName = ({ item, onClick, onFocus, canPreview, isTouch}: Props) => {
     const { name, type }: BoxItem = item;
     const onItemFocus = onFocus ? () => onFocus(item) : null;
     const onItemClick: Function = (): void => onClick(item);
-// console.log(item);
     return type === TYPE_FOLDER || (!isTouch && (type === TYPE_WEBLINK || canPreview)) ? (
         <PlainButton
             className="be-item-label"

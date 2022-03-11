@@ -85,16 +85,15 @@ const ItemList = ({
 
 
         const { selected, type } = items[index];
-
         const isSelectable = isRowSelectable(selectableType, extensionsWhitelist, hasHitSelectionLimit, items[index]);
         return classNames(`bcp-item-row bcp-item-row-${index}`, {
             'bcp-item-row-selected': selected && view !== VIEW_SELECTED,
             'bcp-item-row-unselectable': type !== TYPE_FOLDER && !isSelectable, // folder row should never dim
-            'bcp-item-row--synced': items[index].metadata?.enterprise.oclStatus.ocl === 'Synced',
-            'bcp-item-row--not-latest-version': items[index]?.metadata?.enterprise.oclStatus.ocl === 'not_latest_version',
-            'bcp-item-row--new-file': items[index].metadata?.enterprise.oclStatus.ocl === 'new_file',
-            'bcp-item-row--removed': items[index].metadata?.enterprise.oclStatus.ocl === 'removed',
-            'bcp-item-row--excluded': items[index].metadata?.enterprise.oclStatus.ocl === 'excluded',
+            'bcp-item-row--synced': items[index]?.status === 'synced',
+            'bcp-item-row--not-latest-version': items[index]?.status === 'not_latest_version',
+            'bcp-item-row--new-file': items[index]?.status === 'new_file',
+            'bcp-item-row--removed': items[index]?.status === 'removed',
+            'bcp-item-row--excluded': items[index]?.status === 'excluded',
             'bcp-item-row--disabled': items[index]?.disabled,
         });
     };

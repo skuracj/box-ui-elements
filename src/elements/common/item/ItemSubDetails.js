@@ -18,16 +18,18 @@ type Props = {
     view: View,
 };
 
+const transformStatusString = (status: string) => {
+     return status.charAt(0).toUpperCase() + status.slice(1).split('_').join(' ');
+}
+
 const ItemSubDetails = ({item, view}: Props) => {
-    // console.log('detailsItem', item);
     const {modified_at = '', interacted_at = '', modified_by}: BoxItem = item;
     const modifiedBy: string = modified_by ? modified_by.name || '' : '';
     const isRecents: boolean = view === VIEW_RECENTS;
     const date: string = isRecents ? interacted_at || modified_at : modified_at;
-    const {size}: BoxItem = item;
+    const {size, status}: BoxItem = item;
     const DateValue = <Datefield date={date} omitCommas/>;
     // temporary val / testing
-    const synchronizedWith = item?.metadata?.enterprise?.oclStatus?.ocl;
 
     let message = messages.modifiedDateBy;
     if (isRecents) {
@@ -47,8 +49,8 @@ const ItemSubDetails = ({item, view}: Props) => {
                     }}
                 />
             </span>
-            <span className="bdl-ItemSubDetails-size">{getSize(size)}</span>
-            {synchronizedWith && <span className="bdl-ItemSubDetails-size"> Status: {synchronizedWith}</span>}
+            <span className="bdl-ItemSubDetails-item">{getSize(size)}</span>
+            {status && <span className="bdl-ItemSubDetails-item"> Status: {transformStatusString(status)}</span>}
         </span>
     );
 };

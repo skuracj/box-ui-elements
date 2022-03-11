@@ -18,7 +18,6 @@ export default (
     isTouch: boolean = false,
     isDisabled: boolean,
 ) => ({ rowData }: { rowData: BoxItem }) => {
-    // console.log('rowData => ', rowData);
 
     return (
         <Name

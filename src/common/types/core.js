@@ -331,6 +331,7 @@ type BoxItem = {
     version_limit?: ?number,
     version_number?: string,
     disabled?: boolean,
+    sync_status: string;
 };
 
 type BoxItemCollection = {
