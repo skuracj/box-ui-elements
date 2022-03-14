@@ -40,7 +40,7 @@ describe('elements/content-picker/ContentPicker', () => {
     });
 
     describe('render()', () => {
-        test('should render UploadDialog with contentUploaderProps', () => {
+        test('should NOT render UploadDialog with contentUploaderProps', () => {
             const contentUploaderProps = {
                 apiHost: 'https://api.box.com',
                 chunked: false,
@@ -54,8 +54,7 @@ describe('elements/content-picker/ContentPicker', () => {
                 },
             });
             const uploadDialogElement = wrapper.find(UploadDialog);
-            expect(uploadDialogElement.length).toBe(1);
-            expect(uploadDialogElement.prop('contentUploaderProps')).toEqual(contentUploaderProps);
+            expect(uploadDialogElement.length).toBe(0);
         });
 
         test('should clear selected items on navigation', () => {

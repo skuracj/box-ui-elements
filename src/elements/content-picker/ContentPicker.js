@@ -509,23 +509,25 @@ class ContentPicker extends Component<Props, State> {
         console.log('BOX_FILTERS', this.state?.filters);
         console.log('BOX_ITEMS', commonState.currentCollection.items);
 
-        commonState.currentCollection.items.forEach(item => {
-            let filters = this.state?.filters;
+        if (commonState.currentCollection.items) {
+            commonState.currentCollection.items.forEach(item => {
+                let filters = this.state?.filters;
 
-            if (filters?.length) {
-                if (this.isItemNameMatchingFilters(item.name, item.type, filters)) {
-                    this.select(item)
-                } else {
-                    item.disabled = true;
+                if (filters?.length) {
+                    if (this.isItemNameMatchingFilters(item.name, item.type, filters)) {
+                        this.select(item)
+                    } else {
+                        item.disabled = true;
+                    }
                 }
-            }
 
-            this.setItemStatusIfMetadataPresent(item, {
-                scope: metadataScope,
-                templateName: metadataTemplateName,
-                propName: metadataStatusPropName
-            });
-        })
+                this.setItemStatusIfMetadataPresent(item, {
+                    scope: metadataScope,
+                    templateName: metadataTemplateName,
+                    propName: metadataStatusPropName
+                });
+            })
+        };
 
         // New folder state
         const newState = clearSelectedItemsOnNavigation ? {...commonState, selected: {}} : commonState;

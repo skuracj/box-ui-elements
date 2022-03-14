@@ -50,7 +50,7 @@ const ItemSubDetails = ({item, view}: Props) => {
                 />
             </span>
             <span className="bdl-ItemSubDetails-item">{getSize(size)}</span>
-            {status && <span className="bdl-ItemSubDetails-item"> Status: {transformStatusString(status)}</span>}
+            {status && <span className="bdl-ItemSubDetails-item"> Last sync status: {transformStatusString(status)}</span>}
         </span>
     );
 };
