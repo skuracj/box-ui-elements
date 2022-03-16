@@ -506,15 +506,13 @@ class ContentPicker extends Component<Props, State> {
             rootName: id === rootFolderId ? name : '',
         };
 
-        console.log('BOX_FILTERS', this.state?.filters);
-        console.log('BOX_ITEMS', commonState.currentCollection.items);
-
         if (commonState.currentCollection.items) {
+            const isRootFolder = id === rootFolderId;
             commonState.currentCollection.items.forEach(item => {
                 let filters = this.state?.filters;
 
                 if (filters?.length) {
-                    if (this.isItemNameMatchingFilters(item.name, item.type, filters)) {
+                    if (this.isItemNameMatchingFilters(item.name, item.type, filters, isRootFolder)) {
                         this.select(item)
                     } else {
                         item.disabled = true;
@@ -561,12 +559,14 @@ class ContentPicker extends Component<Props, State> {
      * @private
      * @param {string} [itemName] item name ('file.png')
      * @param {string} [itemType] item type ('folder' | 'file')
-     * @param {Array<BoxItemFilter>} [filters] - Array of filters
+     * @param {Array<BoxItemFilter>} [filters] Array of filters
+     * @param {boolean} [isRootFolder] is current folder id === rootFolderId
      * @return {boolean}
      */
 
-    isItemNameMatchingFilters(itemName: string, itemType: string, filters: Array<BoxItemFilter>): boolean {
-        let resultAction, include = false;
+    isItemNameMatchingFilters(itemName: string, itemType: string, filters: Array<BoxItemFilter>, isRootFolder: boolean): boolean {
+        let resultAction;
+        let include = !isRootFolder;
 
         filters.forEach(({action, applyTo, type, pattern}) => {
             resultAction = action === 'include';
